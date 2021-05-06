@@ -25,6 +25,7 @@ source /etc/profile
 # show updated packages
 sudo genlop -u -l
 
-# sync any guest packages to host (shared folder)
+# ---- Sync packages
+
 sf_vagrant="`sudo df | grep vagrant | tail -1 | awk '{ print $6 }'`"
 sudo rsync -urv /var/cache/portage/packages/* $sf_vagrant/packages/

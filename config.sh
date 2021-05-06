@@ -31,7 +31,6 @@ export BUILD_CUSTOM_OVERLAY_BRANCH="main"   # set to 'development' for most curr
 #export BUILD_AUTO_FINALIZE=false  # if 'true' automatically run finalize.sh script
 
 export BUILD_KERNEL=false                 # build a new kernel?
-export BUILD_INCLUDE_ANSIBLE=false        # include Ansible build? (already enabled in funtoo-base)
 export BUILD_HEADLESS=false               # if false, gui will be shown
 # TODO flag for xorg (BUILD_WINDOW_SYSTEM)?
 
