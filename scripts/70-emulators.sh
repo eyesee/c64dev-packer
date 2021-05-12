@@ -9,7 +9,8 @@ fi
 
 sudo emerge -nuvtND --with-bdeps=y \
     app-emulation/vice \
-    app-emulation/c64-debugger
+    app-emulation/c64-debugger \
+    app-emulation/x16-emulator
 
 # ---- Sync packages
 
