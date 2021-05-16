@@ -8,6 +8,7 @@ fi
 # ---- Image utilities
 
 # TODO
+
 #sudo emerge -nuvtND --with-bdeps=y \
 #    media-gfx/gimp \
 #    media-gfx/imagemagick
@@ -15,8 +16,10 @@ fi
 # ---- Video utilities    
 
 # TODO
+
 #sudo emerge -nuvtND --with-bdeps=y \
-#    media-video/ffmpeg
+#    media-video/ffmpeg \
+#    media-video/mplayer
 
 # ---- Sound players
 
