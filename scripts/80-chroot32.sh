@@ -20,7 +20,8 @@ fi
 # 2. unpack and prepare
 sudo mkdir -p /chroot32
 cd /chroot32
-sudo tar -xpf /vagrant/stage3-i686-1.4-release-std-2021-05-05.tar.xz    # FIXME set in config
+sf_vagrant="`sudo df | grep vagrant | tail -1 | awk '{ print $6 }'`"
+sudo tar -xpf $sf_vagrant/stage3-i686-1.4-release-std-2021-05-05.tar.xz    # FIXME set in config
 sudo mkdir -p var/git/meta-repo
 sudo mkdir -p var/cache/portage/distfiles
 cat <<'DATA' | sudo tee -a root/.bash_profile
