@@ -12,12 +12,12 @@ fi
 # see https://wiki.gentoo.org/wiki/Project:AMD64/32-bit_Chroot_Guide#Installation_of_a_32-bit_chroot
 
 # STEPS:
-# 1. https://build.funtoo.org/1.4-release-std/x86-32bit/i686/2021-05-05/stage3-i686-1.4-release-std-2021-05-05.tar.xz
+# download https://build.funtoo.org/1.4-release-std/x86-32bit/i686/2021-05-05/stage3-i686-1.4-release-std-2021-05-05.tar.xz
 
 # TODO download 32bit stage3, copy in vagrant home dir
 # TODO copy 32bit packages?
 
-# 2. unpack and prepare
+# unpack and prepare
 sudo mkdir -p /chroot32
 cd /chroot32
 sf_vagrant="`sudo df | grep vagrant | tail -1 | awk '{ print $6 }'`"
@@ -36,7 +36,7 @@ PS1="(32-bit chroot) ${PS1}"
 
 DATA
 
-# 3. add chroot32 mount service
+# add chroot32 mount service
 # TODO add overlays? mount /var/git instead of /var/git/meta-repo?
 cat <<'DATA' | sudo tee -a /etc/init.d/chroot32
 #!/sbin/openrc-run
@@ -80,22 +80,24 @@ stop() {
 DATA
 sudo chmod +x /etc/init.d/chroot32
 sudo rc-service chroot32 start
-sudo rc-update add chroot32 default
+sudo rc-update add chroot32 default 
 
-# 4. mount and world sync
+# setup chroot32 portage stuff
+cat <<'DATA' | sudo tee -a etc/portage/package.use
+# required for wine-vanilla:
+>=sys-auth/consolekit-1.2.1 policykit
+>=dev-libs/glib-2.64.6 dbus
+>=media-libs/gd-2.3.0 jpeg truetype fontconfig png
+DATA
 
-#sudo /usr/local/sbin/foo-chroot32
-#epro show
+# TODO setup ego profile
+sudo linux32 chroot /chroot32 /bin/bash -l -c 'env-update && epro show'
 
-#emerge -avtuDN --with-bdeps=y @world
+# mount and update world
 sudo linux32 chroot /chroot32 /bin/bash -l -c 'env-update && emerge -vtuDN --with-bdeps=y @world'
+sudo linux32 chroot /chroot32 /bin/bash -l -c 'env-update && emerge --depclean'
 
-# 5. install wine (and any other 32bit or windows software)
-
-#emerge -nuvtND --with-bdeps=y \
-#    app-emulation/wine-vanilla
-
+# install wine
 sudo linux32 chroot /chroot32 /bin/bash -l -c 'env-update && emerge -nuvtND --with-bdeps=y app-emulation/wine-vanilla'
 
-# exit chroot env
-#exit
+# TODO cleanup
