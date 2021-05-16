@@ -127,8 +127,10 @@ cat <<'DATA' | sudo tee -a /etc/portage/package.license/c64dev-libpng
 # required by openjdk:
 media-libs/libpng libpng2
 DATA
-cat <<'DATA' | sudo tee -a /etc/portage/package.license/c64dev-exomizer
-app-arch/exomizer exomizer
+cat <<'DATA' | sudo tee -a /etc/portage/package.license/c64dev-non-free
+# uncomment to activate non-free licenses:
+#app-arch/exomizer exomizer
+#app-emulation/x16-rom x16-rom
 DATA
 
 # ---- package.mask
