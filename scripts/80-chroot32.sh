@@ -84,8 +84,8 @@ sudo rc-update add chroot32 default
 
 # 4. mount and world sync
 
-sudo /usr/local/sbin/foo-chroot32
-epro show
+#sudo /usr/local/sbin/foo-chroot32
+#epro show
 
 #emerge -avtuDN --with-bdeps=y @world
 sudo linux32 chroot /chroot32 /bin/bash -l -c 'env-update && emerge -vtuDN --with-bdeps=y @world'
