@@ -1,0 +1,4 @@
+#!/bin/bash
+# simple script to change to 32 bit chroot
+#sudo xhost local:localhost
+sudo linux32 chroot /chroot32 /bin/bash -l

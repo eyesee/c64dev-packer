@@ -26,6 +26,12 @@ sudo find /var/cache/portage/packages/ -type f -exec chmod 644 {} +
 sudo chown root:portage /var/cache/portage/packages
 sudo chmod 775 /var/cache/portage/packages
 
+# ---- install /usr/local scripts
+
+sudo chown root:root /tmp/sbin/*
+sudo chmod 750 /tmp/sbin/*
+sudo cp -f /tmp/sbin/* /usr/local/sbin/
+
 # ---- box name
 
 echo "$BUILD_BOX_DESCRIPTION" >> ~vagrant/.release_$BUILD_BOX_NAME

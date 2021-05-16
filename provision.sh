@@ -19,6 +19,7 @@ for script in \
   50-audio-utils \
   60-toolchain \
   70-emulators \
+  80-chroot32 \
   90-postprocess \
   99-cleanup
 do

@@ -46,6 +46,10 @@
       "source": "scripts",
       "type": "file"
   },{
+      "destination": "/tmp/sbin",
+      "source": "scripts/sbin",
+      "type": "file"
+  },{
       "type": "shell",
       "script": "provision.sh",
       "environment_vars": [
