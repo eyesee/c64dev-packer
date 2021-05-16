@@ -9,6 +9,7 @@ fi
 
 # see https://www.funtoo.org/32-bit_Chroot
 # see https://www.funtoo.org/32_bit_chroot_environment_for_Wine
+# see https://wiki.gentoo.org/wiki/Project:AMD64/32-bit_Chroot_Guide#Installation_of_a_32-bit_chroot
 
 # STEPS:
 # 1. https://build.funtoo.org/1.4-release-std/x86-32bit/i686/2021-05-05/stage3-i686-1.4-release-std-2021-05-05.tar.xz
