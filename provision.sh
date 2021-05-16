@@ -15,8 +15,8 @@ for script in \
   10-prepare \
   20-kernel \
   30-system-update \
-  40-graphic-utils \
-  50-audio-utils \
+  40-base \
+  50-media-utils \
   60-toolchain \
   70-emulators \
   80-chroot32 \

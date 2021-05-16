@@ -5,18 +5,7 @@ if [ -z ${BUILD_RUN:-} ]; then
   exit 1
 fi
 
-# ---- Image utilities
-
-# TODO
-#sudo emerge -nuvtND --with-bdeps=y \
-#    media-gfx/gimp \
-#    media-gfx/imagemagick
-
-# ---- Video utilities    
-
-# TODO
-#sudo emerge -nuvtND --with-bdeps=y \
-#    media-video/ffmpeg
+# TODO openjdk
 
 # ---- Sync packages
 

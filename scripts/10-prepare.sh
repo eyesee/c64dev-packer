@@ -28,9 +28,9 @@ sudo chmod 775 /var/cache/portage/packages
 
 # ---- install /usr/local scripts
 
-sudo chown root:root /tmp/sbin/*
-sudo chmod 750 /tmp/sbin/*
-sudo cp -f /tmp/sbin/* /usr/local/sbin/
+sudo chown root:root /tmp/bin/*
+sudo chmod 755 /tmp/bin/*
+sudo cp -f /tmp/bin/* /usr/local/bin/
 
 # ---- box name
 

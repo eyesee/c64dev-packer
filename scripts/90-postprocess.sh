@@ -5,6 +5,9 @@ if [ -z ${BUILD_RUN:-} ]; then
   exit 1
 fi
 
+# enable xdm
+sudo rc-update add xdm default
+
 # refresh fluxbox menu
 fluxbox-generate_menu -is -ds
 
