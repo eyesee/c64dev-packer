@@ -14,10 +14,7 @@ sudo emerge -nuvtND --with-bdeps=y \
 # ---- Packer
 
 sudo emerge -nuvtND --with-bdeps=y \
-    app-arch/pucrunch \
-    app-arch-exomizer
-
-# TODO add exomizer
+    app-arch/pucrunch
 
 # ---- Sync packages
 
