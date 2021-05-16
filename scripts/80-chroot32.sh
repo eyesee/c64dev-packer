@@ -95,9 +95,9 @@ sudo linux32 chroot /chroot32 /bin/bash -l -c 'env-update && epro show'
 
 # mount and update world
 sudo linux32 chroot /chroot32 /bin/bash -l -c 'env-update && emerge -vtuDN --with-bdeps=y @world'
-sudo linux32 chroot /chroot32 /bin/bash -l -c 'env-update && emerge --depclean'
 
 # install wine
 sudo linux32 chroot /chroot32 /bin/bash -l -c 'env-update && emerge -nuvtND --with-bdeps=y app-emulation/wine-vanilla'
 
-# TODO cleanup
+# cleanup
+sudo linux32 chroot /chroot32 /bin/bash -l -c 'env-update && emerge --depclean'
