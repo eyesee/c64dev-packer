@@ -15,7 +15,7 @@ fi
 # download https://build.funtoo.org/1.4-release-std/x86-32bit/i686/2021-05-05/stage3-i686-1.4-release-std-2021-05-05.tar.xz
 
 # TODO download 32bit stage3, copy in vagrant home dir
-# TODO copy 32bit packages?
+# TODO 32bit binary packages?
 
 # unpack and prepare
 sudo mkdir -p /chroot32
@@ -26,7 +26,8 @@ sudo mkdir -p var/git/meta-repo
 sudo mkdir -p var/cache/portage/distfiles
 cat <<'DATA' | sudo tee -a root/.bash_profile
 # run env-update on 32-bit chroot login
-env-update > /dev/null
+env-update
+. /etc/profile
 
 DATA
 cat <<'DATA' | sudo tee -a etc/profile
@@ -37,7 +38,7 @@ PS1="\[\033[38;5;226m\](32-bit chroot)\[\033[0m\] $PS1"
 DATA
 
 # add chroot32 mount service
-# TODO add overlays? mount /var/git instead of /var/git/meta-repo?
+# TODO mount /home/vagrant, /vagrant 
 cat <<'DATA' | sudo tee -a /etc/init.d/chroot32
 #!/sbin/openrc-run
 
@@ -56,6 +57,7 @@ start() {
     mount -o bind,ro /var/git/meta-repo "${chroot_dir}/var/git/meta-repo/" >/dev/null
     mount -o bind,ro /var/git/overlay "${chroot_dir}/var/git/overlay/" >/dev/null
     mount -o bind /var/cache/portage/distfiles "${chroot_dir}/var/cache/portage/distfiles/" >/dev/null
+    [[ -d "/vagrant" ]] && mount -o bind /vagrant "${chroot_dir}/vagrant/" >/dev/null
     mount -t tmpfs -o nosuid,nodev,noexec,mode=755 none "${chroot_dir}/run" > /dev/null
     eend $? "An error occured while attempting to mount 32-bit chroot directories."
     ebegin "Copying 32bit chroot files"
@@ -75,6 +77,7 @@ stop() {
     umount -f "${chroot_dir}/var/git/meta-repo/" >/dev/null
     umount -f "${chroot_dir}/var/git/overlay/" >/dev/null
     umount -f "${chroot_dir}/var/cache/portage/distfiles/" >/dev/null
+    umount -f "${chroot_dir}/vagrant/" >/dev/null
     umount -f "${chroot_dir}/run"
     eend $? "An error occured while attempting to unmount 32-bit chroot directories."
 }

@@ -1,4 +1,8 @@
 #!/bin/bash
 # simple script to change to 32 bit chroot
-#sudo xhost local:localhost
+
+# TODO get current user -> switch to user/root
+# TODO allow cmdline params to be passed to chroot32
+
+sudo xhost local:localhost
 sudo linux32 chroot /chroot32 /bin/bash -l
