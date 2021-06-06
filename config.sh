@@ -34,9 +34,19 @@ export BUILD_KERNEL=false                 # build a new kernel?
 export BUILD_HEADLESS=false               # if false, gui will be shown
 # TODO flag for xorg (BUILD_WINDOW_SYSTEM)?
 
+# TODO:
+export BUILD_CHROOT=true                     # enable chroot (for 32-bit and wine)?
+export BUILD_CHROOT_ROOT="/chroot32"         # root dir of chroot
+export BUILD_CHROOT_VERSION_ID="2021-05-29"  # FIXME autodetect by parsing html index
+export BUILD_CHROOT_ARCH="x86-32bit"         # 32 bit!
+export BUILD_CHROOT_SUBARCH="i686"           # e.g. 'i686' or 'generic_32'
+
 export BUILD_KEEP_MAX_CLOUD_BOXES=1       # set the maximum number of boxes to keep in Vagrant Cloud
 
 # ----------------------------! do not edit below this line !----------------------------
+
+export BUILD_CHROOT_STAGE3_FILE="stage3-${BUILD_CHROOT_SUBARCH}-1.4-release-std-${BUILD_CHROOT_VERSION_ID}.tar.xz"
+export BUILD_CHROOT_STAGE3_URL="https://build.funtoo.org/1.4-release-std/${BUILD_CHROOT_ARCH}/${BUILD_CHROOT_SUBARCH}/${BUILD_CHROOT_VERSION_ID}/${BUILD_CHROOT_STAGE3_FILE}"
 
 # detect number of system cpus available (always select maximum for best performance)
 export BUILD_CPUS=`nproc --all`

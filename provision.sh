@@ -19,7 +19,7 @@ for script in \
   50-media-utils \
   60-toolchain \
   70-emulators \
-  80-chroot32 \
+  80-chroot \
   90-postprocess \
   99-cleanup
 do

@@ -5,23 +5,29 @@ if [ -z ${BUILD_RUN:-} ]; then
   exit 1
 fi
 
+if [ -z ${BUILD_CHROOT:-} ]; then
+    echo "BUILD_CHROOT was not set. Skipping chroot build."
+    exit 0
+else
+    if [ "$BUILD_CHROOT" = false ]; then
+        echo ">>> Skipping chroot build."
+        exit 0
+    else
+        echo ">>> Building chroot in '${BUILD_CHROOT_ROOT}' ..."
+    fi
+fi
+
 # ---- setup chroot 32bit environment
 
 # see https://www.funtoo.org/32-bit_Chroot
 # see https://www.funtoo.org/32_bit_chroot_environment_for_Wine
 # see https://wiki.gentoo.org/wiki/Project:AMD64/32-bit_Chroot_Guide#Installation_of_a_32-bit_chroot
 
-# STEPS:
-# download https://build.funtoo.org/1.4-release-std/x86-32bit/i686/2021-05-05/stage3-i686-1.4-release-std-2021-05-05.tar.xz
-
-# TODO download 32bit stage3, copy in vagrant home dir
-# TODO 32bit binary packages?
-
 # unpack and prepare
-sudo mkdir -p /chroot32
-cd /chroot32
+sudo mkdir -p "$BUILD_CHROOT_ROOT"
+cd "$BUILD_CHROOT_ROOT"
 sf_vagrant="`sudo df | grep vagrant | tail -1 | awk '{ print $6 }'`"
-sudo tar -xpf $sf_vagrant/stage3-i686-1.4-release-std-2021-05-05.tar.xz    # FIXME set in config
+sudo tar -xpf $sf_vagrant/"$BUILD_CHROOT_STAGE3_FILE"
 sudo mkdir -p var/git/meta-repo
 sudo mkdir -p var/cache/portage/distfiles
 cat <<'DATA' | sudo tee -a root/.bash_profile
@@ -37,12 +43,14 @@ PS1="\[\033[38;5;226m\](32-bit chroot)\[\033[0m\] $PS1"
 
 DATA
 
+# TODO modify make.conf -> binary packages and storage for faster installation
+
 # add chroot32 mount service
 # TODO mount /home/vagrant, /vagrant 
 cat <<'DATA' | sudo tee -a /etc/init.d/chroot32
 #!/sbin/openrc-run
 
-chroot_dir=/chroot32
+chroot_dir=BUILD_CHROOT_ROOT
 
 depend() {
    need localmount bootmisc
@@ -60,7 +68,7 @@ start() {
     [[ -d "/vagrant" ]] && mount -o bind /vagrant "${chroot_dir}/vagrant/" >/dev/null
     mount -t tmpfs -o nosuid,nodev,noexec,mode=755 none "${chroot_dir}/run" > /dev/null
     eend $? "An error occured while attempting to mount 32-bit chroot directories."
-    ebegin "Copying 32bit chroot files"
+    ebegin "Copying 32-bit chroot files"
     cp -pf /etc/resolv.conf /etc/passwd /etc/shadow /etc/group \
            /etc/hosts "${chroot_dir}/etc" >/dev/null
            # TODO add /etc/gshadow if needed
@@ -83,6 +91,7 @@ stop() {
 }
 
 DATA
+sudo sed -i 's/BUILD_CHROOT_ROOT/'"$BUILD_CHROOT_ROOT"'/g' /etc/init.d/chroot32
 sudo chmod +x /etc/init.d/chroot32
 sudo rc-service chroot32 start
 sudo rc-update add chroot32 default 
@@ -96,24 +105,24 @@ cat <<'DATA' | sudo tee -a etc/portage/package.use
 DATA
 
 # TODO setup ego profile if needed
-sudo linux32 chroot /chroot32 /bin/bash -l -c 'env-update && epro show'
+sudo linux32 chroot "$BUILD_CHROOT_ROOT" /bin/bash -l -c 'env-update && epro show'
 
 # update world
-sudo linux32 chroot /chroot32 /bin/bash -l -c 'emerge -vtuDN --with-bdeps=y @world'
+sudo linux32 chroot "$BUILD_CHROOT_ROOT" /bin/bash -l -c 'emerge -vtuDN --with-bdeps=y @world'
 
 # install software
-sudo linux32 chroot /chroot32 /bin/bash -l -c 'emerge -nuvtND --with-bdeps=y \
+sudo linux32 chroot "$BUILD_CHROOT_ROOT" /bin/bash -l -c 'emerge -nuvtND --with-bdeps=y \
     app-emulation/wine-vanilla \
     app-admin/eclean-kernel \
 '
 
 # uninstall software
-sudo linux32 chroot /chroot32 /bin/bash -l -c 'emerge --unmerge -vt \
+sudo linux32 chroot "$BUILD_CHROOT_ROOT" /bin/bash -l -c 'emerge --unmerge -vt \
     sys-kernel/debian-sources \
 '
 
 # update world
-sudo linux32 chroot /chroot32 /bin/bash -l -c 'emerge -vtuDN --with-bdeps=y @world'
+sudo linux32 chroot "$BUILD_CHROOT_ROOT" /bin/bash -l -c 'emerge -vtuDN --with-bdeps=y @world'
 
 # cleanup
-sudo linux32 chroot /chroot32 /bin/bash -l -c 'emerge --depclean && eclean-kernel && rm /usr/src/linux'
+sudo linux32 chroot "$BUILD_CHROOT_ROOT" /bin/bash -l -c 'emerge --depclean && eclean-kernel && rm /usr/src/linux'

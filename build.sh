@@ -38,6 +38,8 @@ else
 	fi
 fi
 
+# TODO download 32bit stage3, copy in vagrant home dir
+
 if [ -d "keys" ]; then
 	echo "Ok, key dir exists."
 else
