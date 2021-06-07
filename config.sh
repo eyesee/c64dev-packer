@@ -34,7 +34,7 @@ export BUILD_KERNEL=false                 # build a new kernel?
 export BUILD_HEADLESS=false               # if false, gui will be shown
 # TODO flag for xorg (BUILD_WINDOW_SYSTEM)?
 
-# TODO:
+# 32 bit chroot for wine
 export BUILD_CHROOT=true                     # enable chroot (for 32-bit and wine)?
 export BUILD_CHROOT_ROOT="/chroot32"         # root dir of chroot
 export BUILD_CHROOT_VERSION_ID="2021-05-29"  # FIXME autodetect by parsing html index
