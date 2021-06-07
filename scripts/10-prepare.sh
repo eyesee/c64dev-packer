@@ -162,6 +162,14 @@ sudo cp -f /usr/src/kernel.config /usr/src/linux/.config
 sudo ego sync
 sudo eclean packages
 
+# ---- java fix
+
+sudo emerge -nuvtND --with-bdeps=y \
+	eselect-java
+
+# DEBUG:
+#eselect java-vm list
+
 # ---- profile mix-ins
 
 sudo epro list
