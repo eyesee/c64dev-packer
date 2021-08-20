@@ -37,7 +37,7 @@ Get the latest experimental build from Vagrant Cloud: [eyesee/c64dev](https://ap
 
  - Run ```./test_ansible.sh```
 
-#### Upload the box to Vagrant Cloud (experimental)
+#### Upload the box to Vagrant Cloud (account required)
 
  - Run ```./upload.sh```
 

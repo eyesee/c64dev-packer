@@ -124,9 +124,9 @@ DATA
 cat <<'DATA' | sudo tee -a /etc/portage/package.use/c64dev-gimp
 net-libs/liboauth nss
 DATA
-cat <<'DATA' | sudo tee -a /etc/portage/package.use/c64dev-x16-emulator
-app-emulation/x16-emulator -rom
-DATA
+#cat <<'DATA' | sudo tee -a /etc/portage/package.use/c64dev-x16-emulator
+#app-emulation/x16-emulator -rom
+#DATA
 
 # ---- package.license
 
