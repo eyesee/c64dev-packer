@@ -1,7 +1,9 @@
 # -*- mode: ruby -*-
-# vi: set ft=ruby :
+# vim: ts=2 sw=2 et ft=ruby :
 
 system("./config.sh >/dev/null")
+
+Vagrant.require_version ">= 2.1.0"
 
 $script_export_packages = <<SCRIPT
 # sync any guest packages to host (vboxsf)
@@ -28,6 +30,15 @@ make olddefconfig
 make modules_prepare
 SCRIPT
 
+$script_remove_kernel = <<SCRIPT
+emerge --unmerge debian-sources
+# clean stale kernel files
+mount /boot || true
+eclean-kernel -l
+eclean-kernel -n 1
+ego boot update
+SCRIPT
+
 $script_cleanup = <<SCRIPT
 # debug: list running services
 rc-status
@@ -45,7 +56,7 @@ rc-status
 /etc/init.d/local stop || true
 /etc/init.d/acpid stop || true
 # let it settle
-sync && sleep 10
+sync && sleep 15
 # run cleanup script (from funtoo-base box)
 /usr/local/sbin/foo-cleanup
 # delete some logfiles
@@ -55,19 +66,18 @@ for i in "${logfiles[@]}"; do
 done
 rm -f /var/log/portage/elog/*.log
 # let it settle
-sync && sleep 10
+sync && sleep 15
 # debug: list running services
 rc-status
 # clean shell history
 set +o history
 rm -f /home/vagrant/.bash_history
 rm -f /root/.bash_history
-sync
-# run zerofree at last to squeeze the last bit
-# /boot
+sync && sleep 5
+# zerofree /boot
 mount -v -n -o remount,ro /dev/sda1
 zerofree /dev/sda1 && echo "zerofree: success on /dev/sda1 (boot)"
-# /
+# zerofree root fs
 mount -v -n -o remount,ro /dev/sda4
 zerofree /dev/sda4 && echo "zerofree: success on /dev/sda4 (root)"
 # swap
@@ -79,6 +89,7 @@ SCRIPT
 Vagrant.configure("2") do |config|
   config.vm.box_check_update = false
   config.vm.box = "#{ENV['BUILD_BOX_NAME']}"
+  #config.vm.box_version = ">0"   # TODO version constraint (not building funtoo next)
   config.vm.hostname = "#{ENV['BUILD_BOX_NAME']}"
   config.vm.provider "virtualbox" do |vb|
     vb.gui = (ENV['BUILD_HEADLESS'] == "false")
@@ -129,15 +140,15 @@ Vagrant.configure("2") do |config|
 
   # adapter 2 (eth1): public network (bridged)
   config.vm.network "public_network",
-  	type: "dhcp",
-  	mac: "0800276c6237",  # fixed, pattern: 080027xxxxxx
-  	use_dhcp_assigned_default_route: true,
-  	bridge: [
-  		"eth0",
-  		"wlan0",
-  		"en0: Wi-Fi (Airport)",
-  		"en1: Wi-Fi (AirPort)"
-  	]
+    type: "dhcp",
+    mac: "0800276c6237",  # fixed, pattern: 080027xxxxxx
+    use_dhcp_assigned_default_route: true,
+    bridge: [
+      "eth0",
+      "wlan0",
+      "en0: Wi-Fi (Airport)",
+      "en1: Wi-Fi (AirPort)"
+    ]
 
   config.ssh.insert_key = false
   config.ssh.connect_timeout = 60
@@ -155,9 +166,12 @@ Vagrant.configure("2") do |config|
   # ansible provisioning executed only in finalizing step (finalize.sh)
   config.vm.provision "provision_ansible", type: "ansible_local" do |ansible|
     ansible.install = false
-    ansible.verbose = true
+    ansible.verbose = "v"
     ansible.compatibility_mode = "2.0"
-    ansible.playbook = "provision.yml"
+    ansible.playbook = "ansible/provision.yml"
+    ansible.config_file = "ansible/ansible.cfg"
+    #ansible.inventory_path = "ansible/environment/#{ENV['BUILD_ENVIRONMENT']}"
+    ansible.raw_arguments  = ["--connection=local"]
     #ansible.extra_vars = {
     #  my_var: "#{ENV['MY_VAR']}"
     #}
@@ -165,5 +179,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "export_packages", type: "shell", inline: $script_export_packages, privileged: true
   config.vm.provision "clean_kernel", type: "shell", inline: $script_clean_kernel, privileged: true
+  config.vm.provision "remove_kernel", type: "shell", inline: $script_remove_kernel, privileged: true
   config.vm.provision "cleanup", type: "shell", inline: $script_cleanup, privileged: true
+  # TODO add trigger for disk compaction?
 end

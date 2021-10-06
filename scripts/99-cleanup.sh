@@ -1,4 +1,5 @@
 #!/bin/bash -uex
+# vim: ts=2 sw=2 et
 
 if [ -z ${BUILD_RUN:-} ]; then
   echo "This script can not be run directly! Aborting."
@@ -9,15 +10,20 @@ user_id=$(id -u)    # FIX: because of "/etc/profile.d/java-config-2.sh: line 22:
 sudo env-update
 source /etc/profile
 
-sudo eclean packages
-
+# check consistency
+sudo emerge -vt @preserved-rebuild
 sudo emerge --depclean
 sudo emerge -vt @preserved-rebuild
+sudo revdep-rebuild
+
+# clean packages
+sudo emaint binhost --fix
+sudo eclean packages
 
 sudo bash -c "sed -i '/^MAKEOPTS/d' /etc/portage/make.conf"           # delete MAKEOPTS (make.conf)
 #sudo bash -c "sed -i 's/^\(MAKEOPTS.*\)/#\1/g' /etc/genkernel.conf"   # comment-in MAKEOPTS (genkernel) # FIXME do when genkernel was invoked in 20-kernel.sh
 
-sudo find /etc/ -name '._cfg*'				# DEBUG: list all config files needing an update
+sudo find /etc/ -name '._cfg*'        # DEBUG: list all config files needing an update
 sudo find /etc/ -name '._cfg*' -print -exec cat -n '{}' \;  # DEBUG: cat all config files needing an update
 
 # prevent replacement of our modified configs:
@@ -30,18 +36,17 @@ sudo rm -f /etc/conf.d/._cfg0000_hostname
 
 sudo etc-update --verbose --preen    # auto-merge trivial changes
 
-sudo find /etc/ -name '._cfg*'				# DEBUG: list all remaining config files needing an update
+sudo find /etc/ -name '._cfg*'        # DEBUG: list all remaining config files needing an update
 sudo find /etc/ -name '._cfg*' -print -exec cat -n '{}' \;  # DEBUG: cat all config files needing an update
 
-sudo etc-update --verbose --automode -5		# force 'auto-merge' for remaining configs
+sudo etc-update --verbose --automode -5   # force 'auto-merge' for remaining configs
 
 sudo eselect kernel list
 sudo eclean-kernel -l
 sudo ego boot update
 
-# TODO temporary not working due to overlay
-#sudo eix-update
-#sudo eix-test-obsolete
+sudo eix-update
+sudo eix-test-obsolete
 
 sudo rm -f /etc/resolv.conf
 sudo rm -f /etc/resolv.conf.bak
@@ -49,7 +54,10 @@ sudo rm -f /etc/resolv.conf.bak
 sudo rc-update -v    # show final runlevels
 sudo genlop -u -l    # show (un)merged packages before logs are cleared
 
-# cleanup remaining data
+# TODO test export distfiles to local directory
+#sf_vagrant="`sudo df | grep vagrant | tail -1 | awk '{ print $6 }'`"
+#sudo rsync -urv /var/cache/portage/distfiles/* $sf_vagrant/distfiles/
+
 sudo /usr/local/sbin/foo-cleanup
 
 # simple way to claim some free space before export

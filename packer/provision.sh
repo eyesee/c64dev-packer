@@ -1,15 +1,16 @@
-#!/bin/bash -e
+#!/bin/bash -ue
+# vim: ts=2 sw=2 et
 
 if [ -z ${BUILD_RUN:-} ]; then
   echo "This script can not be run directly! Aborting."
   exit 1
 fi
 
-if [ -z ${SCRIPTS:-} ]; then
+if [ -z ${scripts:-} ]; then
   SCRIPTS=.
 fi
 
-chmod +x $SCRIPTS/scripts/*.sh
+chmod +x ${scripts}/scripts/*.sh
 
 for script in \
   10-prepare \
@@ -26,7 +27,7 @@ do
   echo "==============================================================================="
   echo " >>> Running $script.sh"
   echo "==============================================================================="
-  "$SCRIPTS/scripts/$script.sh"
+  "$scripts/scripts/$script.sh"
   printf "\n\n"
 done
 
